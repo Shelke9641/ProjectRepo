@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Meta and Title -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Records</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+
+    <!-- Custom Styles -->
+    <style>
+        /* Hide the edit and save icons by default */
+        .editable .edit-icon,
+        .editable .save-icon {
+            display: none;
+        }
+
+        /* Only show the edit icon on hover over the specific field */
+        .editable:hover .edit-icon {
+            display: inline-block;
+        }
+
+        /* Show the save icon only when editing */
+        .editable.editing .save-icon {
+            display: inline-block;
+        }
+
+        /* Hide edit icon when editing */
+        .editable.editing .edit-icon {
+            display: none;
+        }
+
+        /* Editable field focus styles */
+        .editable {
+            cursor: pointer;
+            padding: 2px;
+            position: relative;
+        }
+
+        .editable input {
+            width: 90%;
+        }
+
+        .editable:focus {
+            outline: none;
+            background-color: #f8f9fa;
+            border: 1px dashed #007bff;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .success-message {
+            color: green;
+            font-size: 0.9rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">User Records</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>DOB</th>
+                    <th>Education</th>
+                    <th>Country</th>
+                    <th>State</th>
+                    <th>City</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${userList}">
+                    <td th:text="${user.id}"></td>
+                    <td class="editable" data-field="fname">
+                        <span th:text="${user.fname}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td class="editable" data-field="gender">
+                        <span th:text="${user.gender}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td class="editable" data-field="femail">
+                        <span th:text="${user.femail}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td class="editable" data-field="fphone">
+                        <span th:text="${user.fphone}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td class="editable" data-field="date">
+                        <span th:text="${user.date}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td class="editable" data-field="education">
+                        <span th:text="${user.education}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td class="editable" data-field="country">
+                        <span th:text="${user.country}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td class="editable" data-field="state">
+                        <span th:text="${user.state}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td class="editable" data-field="city">
+                        <span th:text="${user.city}"></span>
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-check-square-fill save-icon"></i>
+                    </td>
+                    <td>
+                        <!-- Modal trigger button -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" th:data-bs-target="'#editModal_' + ${user.id}">Edit All</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="/home" class="btn btn-secondary">Back to Registration</a>
+        <div class="error-message" id="error-message">Error updating the user. Please try again later.</div>
+        <div class="success-message" id="success-message">User updated successfully!</div>
+    </div>
+
+    <!-- Modal for Editing User -->
+    <div th:each="user : ${userList}" th:id="'editModal_' + ${user.id}" class="modal fade" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/updateUser}" method="post">
+                        <input type="hidden" class="form-control" name="id" th:value="${user.id}">
+
+                        <div class="mb-3">
+                            <label for="fname" class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="fname" th:value="${user.fname}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="femail" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="femail" th:value="${user.femail}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="" th:selected="${user.gender == ''}">Select Gender</option>
+                                <option value="male" th:selected="${user.gender == 'male'}">Male</option>
+                                <option value="female" th:selected="${user.gender == 'female'}">Female</option>
+                                <option value="other" th:selected="${user.gender == 'other'}">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fphone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="fphone" name="fphone" th:value="${user.fphone}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="date" name="date" th:value="${user.date}">
+                        </div>
+
+						<div class="mb-3">
+							<label for="education" class="form-label">Education</label> <select
+								class="form-select" id="education" name="education">
+								<option value="">Select Education</option>
+								<option value="BCS" th:selected="${user.education == 'BCS'}">BCS</option>
+								<option value="BCA" th:selected="${user.education == 'BCA'}">BCA</option>
+								<option value="B COM" th:selected="${user.education == 'B COM'}">B
+									COM</option>
+								<option value="BE" th:selected="${user.education == 'BE'}">BE</option>
+							</select>
+						</div>
+
+						<div class="mb-3">
+							<label for="country" class="form-label">Country</label> <select
+								class="form-select" id="country" name="country">
+								<option value="">Select Country</option>
+								<option value="India" th:selected="${user.country == 'India'}">India</option>
+								<option value="USA" th:selected="${user.country == 'USA'}">USA</option>
+								<option value="China" th:selected="${user.country == 'China'}">China</option>
+								<option value="France" th:selected="${user.country == 'France'}">France</option>
+							</select>
+						</div>
+
+						<!-- State Field -->
+						<div class="mb-3">
+							<label for="state" class="form-label">State</label> <select
+								class="form-select" id="state" name="state">
+								<option value="">Select State</option>
+								<option value="Maharashtra"
+									th:selected="${user.state == 'Maharashtra'}">Maharashtra</option>
+								<option value="Hyderabad"
+									th:selected="${user.state == 'Hyderabad'}">Hyderabad</option>
+								<option value="Karnataka"
+									th:selected="${user.state == 'Karnataka'}">Karnataka</option>
+								<option value="Gujarat" th:selected="${user.state == 'Gujarat'}">Gujarat</option>
+							</select>
+						</div>
+
+						<!-- City Field -->
+						<div class="mb-3">
+							<label for="city" class="form-label">City</label> <select
+								class="form-select" id="city" name="city">
+								<option value="">Select city</option>
+								<option value="Pune" th:selected="${user.city == 'Pune'}">Pune</option>
+								<option value="Mumbai" th:selected="${user.city == 'Mumbai'}">Mumbai</option>
+								<option value="Nashik" th:selected="${user.city == 'Nashik'}">Nashik</option>
+								<option value="Solapur" th:selected="${user.city == 'Solapur'}">Solapur</option>
+							</select>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary"
+								data-bs-dismiss="modal">Close</button>
+							<button type="submit" class="btn btn-primary">Save
+								changes</button>
+						</div>
+					</form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript for Inline Editing -->
+   <script>
+   document.querySelectorAll('.editable').forEach((cell) => {
+	    const span = cell.querySelector('span');
+	    const editIcon = cell.querySelector('.edit-icon');
+	    const saveIcon = cell.querySelector('.save-icon');
+	    const fieldName = cell.getAttribute('data-field');
+	    let input;
+
+	    // Handle click event to enable editing
+	    cell.addEventListener('click', function() {
+	        if (!cell.classList.contains('editing')) {
+	            cell.classList.add('editing');
+
+	            // Create input or select based on the f3ield type
+	            if (fieldName === 'date') {
+	                // Create date input for the date field
+	                input = document.createElement('input');
+	                input.type = 'date';
+	                input.value = span.textContent; // Set the current date
+	            } else if (fieldName === 'education') {
+	                // Create select for the education field
+	                input = document.createElement('select');
+	                const options = ['Select Education', 'BCS', 'BCA', 'B COM', 'BE'];
+	                options.forEach(option => {
+	                    const opt = document.createElement('option');
+	                    opt.value = option;
+	                    opt.textContent = option;
+	                    if (option === span.textContent) {
+	                        opt.selected = true; // Set selected option
+	                    }
+	                    input.appendChild(opt);
+	                });
+	            } else if (fieldName === 'country') {
+	                // Create select for the country field
+	                input = document.createElement('select');
+	                const countries = ['Select Country', 'India', 'USA', 'Canada']; // Add more countries as needed
+	                countries.forEach(country => {
+	                    const opt = document.createElement('option');
+	                    opt.value = country;
+	                    opt.textContent = country;
+	                    if (country === span.textContent) {
+	                        opt.selected = true; // Set selected option
+	                    }
+	                    input.appendChild(opt);
+	                });
+	            } else if (fieldName === 'state') {
+	                // Create select for the state field
+	                input = document.createElement('select');
+	                const states = ['Select State', 'Maharashtra', 'Gujarat', 'Karnataka', 'Tamil Nadu']; // Add more states as needed
+	                states.forEach(state => {
+	                    const opt = document.createElement('option');
+	                    opt.value = state;
+	                    opt.textContent = state;
+	                    if (state === span.textContent) {
+	                        opt.selected = true; // Set selected option
+	                    }
+	                    input.appendChild(opt);
+	                });
+	            } else if (fieldName === 'city') {
+	                // Create select for the city field
+	                input = document.createElement('select');
+	                const cities = ['Select City', 'Mumbai', 'Ahmedabad', 'Bangalore', 'Chennai']; // Add more cities as needed
+	                cities.forEach(city => {
+	                    const opt = document.createElement('option');
+	                    opt.value = city;
+	                    opt.textContent = city;
+	                    if (city === span.textContent) {
+	                        opt.selected = true; // Set selected option
+	                    }
+	                    input.appendChild(opt);
+	                });
+	            } else if (fieldName === 'gender') {
+	                // Create select for the gender field
+	                input = document.createElement('select');
+	                const genders = ['Select Gender', 'male', 'female', 'other'];
+	                genders.forEach(gender => {
+	                    const opt = document.createElement('option');
+	                    opt.value = gender;
+	                    opt.textContent = gender.charAt(0).toUpperCase() + gender.slice(1); // Capitalize first letter
+	                    if (gender === span.textContent) {
+	                        opt.selected = true; // Set selected option
+	                    }
+	                    input.appendChild(opt);
+	                });
+	            } else {
+	                // Default to text input for other fields
+	                input = document.createElement('input');
+	                input.type = 'text';
+	                input.value = span.textContent; // Set the current value
+	            }
+
+	            cell.replaceChild(input, span);
+	            input.focus();
+	        }
+	    });
+
+	    // Handle save event when the save icon is clicked
+	    saveIcon.addEventListener('click', function() {
+	        if (cell.classList.contains('editing')) {
+	            const newValue = input.value;
+	            const userId = cell.parentElement.children[0].textContent; // Get user ID
+
+	            // AJAX request to save the data
+	            fetch('/updateUserInline', {
+	                method: 'POST',
+	                headers: {
+	                    'Content-Type': 'application/json'
+	                },
+	                body: JSON.stringify({
+	                    id: userId,
+	                    field: fieldName,
+	                    value: newValue
+	                })
+	            })
+	            .then(response => {
+	                if (response.ok) {
+	                    span.textContent = newValue; // Update span with new value
+	                    cell.classList.remove('editing');
+	                    cell.replaceChild(span, input); // Replace input with span
+	                    document.getElementById('success-message').style.display = 'block';
+	                } else {
+	                    throw new Error('Failed to update.');
+	                }
+	            })
+	            .catch(error => {
+	                document.getElementById('error-message').style.display = 'block';
+	            });
+	        }
+	    });
+	});
+   </script></body>
+</html>

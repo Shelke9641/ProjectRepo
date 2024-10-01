@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Records</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+
+    <style>
+        .edit-icon, .save-icon {
+            display: none;
+            cursor: pointer;
+            margin-left: 10px;
+            color: #007bff;
+        }
+
+        td:hover .edit-icon {
+            display: inline-block;
+        }
+
+        .editable {
+            border: 1px dashed transparent;
+            padding: 2px;
+        }
+
+        .editable:focus {
+            outline: none;
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+
+        .save-btn {
+            display: none;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">User Records</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>DOB</th>
+                    <th>Education</th>
+                    <th>Country</th>
+                    <th>State</th>
+                    <th>City</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${userList}">
+                    <td th:text="${user.id}"></td>
+                    <td class="editable" th:text="${user.fname}" id="fname${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td class="editable" th:text="${user.gender}" id="gender${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td class="editable" th:text="${user.femail}" id="email${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td class="editable" th:text="${user.fphone}" id="phone${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td class="editable" th:text="${user.date}" id="dob${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td class="editable" th:text="${user.education}" id="education${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td class="editable" th:text="${user.country}" id="country${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td class="editable" th:text="${user.state}" id="state${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td class="editable" th:text="${user.city}" id="city${user.id}">
+                        <i class="bi bi-pencil-square edit-icon"></i>
+                        <i class="bi bi-save save-icon" onclick="saveData()"></i>
+                    </td>
+                    <td>
+                        <!-- Button to open the modal -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" th:data-bs-target="'#editModal_' + ${user.id}">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="/home" class="btn btn-secondary">Back to Registration</a>
+    </div>
+
+    <!-- Modal for editing entire user record -->
+    <div th:each="user : ${userList}" th:id="'editModal_' + ${user.id}" class="modal fade" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User: <span th:text="${user.fname}"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/updateUser}" method="post">
+                        <input type="hidden" name="id" th:value="${user.id}" />
+                        
+                        <div class="mb-3">
+                            <label for="fname" class="form-label">First Name</label>
+                            <input type="text" class="form-control" name="fname" th:value="${user.fname}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="femail" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="femail" th:value="${user.femail}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="fphone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" name="fphone" th:value="${user.fphone}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" name="gender" th:value="${user.gender}">
+                                <option value="male" th:selected="${user.gender == 'male'}">Male</option>
+                                <option value="female" th:selected="${user.gender == 'female'}">Female</option>
+                                <option value="other" th:selected="${user.gender == 'other'}">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" name="date" th:value="${user.date}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="education" class="form-label">Education</label>
+                            <input type="text" class="form-control" name="education" th:value="${user.education}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <input type="text" class="form-control" name="country" th:value="${user.country}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control" name="state" th:value="${user.state}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" name="city" th:value="${user.city}">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        function saveData() {
+            console.log("Data edited");
+            // Here you can implement the logic to save the data if necessary.
+            // For example, you might want to fetch updated values and send them to your backend.
+        }
+    </script>
+</body>
+</html>
